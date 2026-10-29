@@ -11,6 +11,7 @@ import SwiftUI
 
 class SourceSearchViewController: MangaCollectionViewController {
     let viewModel: SourceSearchViewModel
+    private let verificationSourceKey: String
 
     var searchText: String = ""
     var enabledFilters: [FilterValue] = [] {
@@ -35,6 +36,7 @@ class SourceSearchViewController: MangaCollectionViewController {
     }
 
     init(source: AidokuRunner.Source) {
+        self.verificationSourceKey = source.key
         self.viewModel = .init(source: source)
         super.init()
     }
@@ -95,8 +97,13 @@ class SourceSearchViewController: MangaCollectionViewController {
             }
             .store(in: &cancellables)
 
-        addObserver(forName: .init("refresh-content")) { [weak self] _ in
-            guard let self else { return }
+        addObserver(forName: .init("refresh-content")) { [weak self] notification in
+            guard let self else {
+                return
+            }
+            if let sourceKey = notification.object as? String, sourceKey != self.verificationSourceKey {
+                return
+            }
             self.viewModel.loadManga(
                 searchText: self.searchText,
                 filters: self.enabledFilters,

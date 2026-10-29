@@ -874,3 +874,15 @@
 "TOGGLE_BARS" = "Toggle bar visibility";
 "CLOSE_READER" = "Close reader";
 "TOGGLE_PAGE_OFFSET" = "Toggle page offset";
+
+// Website verification
+"WEBSITE_VERIFICATION" = "Website Verification";
+"WEBSITE_VERIFICATION_RETRY" = "Complete and Retry";
+"WEBSITE_VERIFICATION_INSTRUCTIONS" = "Complete the website verification, then tap Complete and Retry.";
+"WEBSITE_VERIFICATION_CHECKING" = "Checking access…";
+"WEBSITE_VERIFICATION_STILL_BLOCKED" = "Source requests are still blocked. Complete the website verification and retry. Browser verification alone may not restore access.";
+"WEBSITE_VERIFICATION_NETWORK_ERROR" = "Unable to check access. Check your connection, reload the page and retry.";
+"WEBSITE_VERIFICATION_EXPIRED" = "The verification session expired. Close this page and open Website Verification again.";
+"WEBSITE_VERIFICATION_REQUIRED" = "This source needs website verification. Open Website Verification from the source menu first.";
+"WEBSITE_VERIFICATION_CANCELED" = "Website verification was canceled.";
+"WEBSITE_VERIFICATION_UNAVAILABLE" = "Open this source in the foreground to complete website verification.";

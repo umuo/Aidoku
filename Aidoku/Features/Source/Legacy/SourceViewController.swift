@@ -121,6 +121,12 @@ class SourceViewController: OldMangaCollectionViewController {
     }
 
     override func observe() {
+        addObserver(forName: .init("refresh-content")) { [weak self] notification in
+            guard let self, let key = notification.object as? String, key == self.source.id else {
+                return
+            }
+            self.refresh()
+        }
         // refresh when languages change
         addObserver(forName: "\(source.id).languages") { [weak self] _ in
             guard let self = self else { return }
@@ -219,6 +225,13 @@ class SourceViewController: OldMangaCollectionViewController {
                 )
             )
         }
+        if WebsiteVerificationPolicy(sourceKey: source.id, url: URL(string: source.manifest.info.url ?? "") ?? source.url) != nil {
+            items.append(UIBarButtonItem(
+                image: UIImage(systemName: "checkmark.shield"), style: .plain,
+                target: self, action: #selector(openWebsiteVerification)
+            ))
+            items.last?.accessibilityLabel = NSLocalizedString("WEBSITE_VERIFICATION")
+        }
         let finalItems = items // switch to constant
         Task { @MainActor in
             navigationItem.rightBarButtonItems = finalItems
@@ -269,6 +282,17 @@ class SourceViewController: OldMangaCollectionViewController {
             vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: false)
         }
+    }
+
+    @objc func openWebsiteVerification() {
+        guard let url = URL(string: source.manifest.info.url ?? ""),
+              let policy = WebsiteVerificationPolicy(sourceKey: source.id, url: url) else {
+            return
+        }
+        let controller = WebsiteVerificationViewController(
+            policy: policy, sourceKey: source.id, userAgent: source.netModule.userAgent
+        )
+        present(UINavigationController(rootViewController: controller), animated: true)
     }
 
     @objc func openSourceWebView() {

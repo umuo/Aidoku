@@ -830,3 +830,15 @@
 "MIGRATE_WITH_HISTORY" = "迁移并保留历史";
 "AUTO_SCROLL" = "自动滚动";
 "AUTO_SCROLL_SPEED" = "自动滚动速度";
+
+// Website verification
+"WEBSITE_VERIFICATION" = "网站验证";
+"WEBSITE_VERIFICATION_RETRY" = "完成并重试";
+"WEBSITE_VERIFICATION_INSTRUCTIONS" = "请完成网站验证，然后点击“完成并重试”。";
+"WEBSITE_VERIFICATION_CHECKING" = "正在检查访问…";
+"WEBSITE_VERIFICATION_STILL_BLOCKED" = "图源请求仍受限制。请完成网站验证后重试；网页验证成功后，图源也可能仍无法访问。";
+"WEBSITE_VERIFICATION_NETWORK_ERROR" = "无法检查访问。请检查网络，重新加载网页后重试。";
+"WEBSITE_VERIFICATION_EXPIRED" = "验证会话已超时，请关闭此页面后重新打开“网站验证”。";
+"WEBSITE_VERIFICATION_REQUIRED" = "此图源需要网站验证，请先从图源菜单打开“网站验证”。";
+"WEBSITE_VERIFICATION_CANCELED" = "已取消网站验证。";
+"WEBSITE_VERIFICATION_UNAVAILABLE" = "请在前台打开此图源，完成网站验证。";

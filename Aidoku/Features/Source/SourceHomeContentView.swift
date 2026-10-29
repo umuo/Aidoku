@@ -150,7 +150,10 @@ struct SourceHomeContentView: View {
                     }
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .init("refresh-content"))) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: .init("refresh-content"))) { notification in
+                if let sourceKey = notification.object as? String, sourceKey != source.key {
+                    return
+                }
                 loadTask?.cancel()
                 loadTask = Task {
                     guard !Task.isCancelled else { return }

@@ -13,6 +13,7 @@ struct SourceSettingsView: View {
     let source: AidokuRunner.Source
 
     @State private var settings: [Setting] = []
+    @State private var showingWebsiteVerification = false
     @State private var showingClearCacheConfirm = false
     @State private var showingResetAlert = false
     @State private var error: Error?
@@ -58,6 +59,11 @@ struct SourceSettingsView: View {
             }
 
             Section {
+                if source.websiteVerificationPolicy != nil {
+                    Button(NSLocalizedString("WEBSITE_VERIFICATION")) {
+                        showingWebsiteVerification = true
+                    }
+                }
                 Button(NSLocalizedString("CLEAR_SOURCE_CACHE")) {
                     showingClearCacheConfirm = true
                 }
@@ -94,6 +100,9 @@ struct SourceSettingsView: View {
             Task {
                 await loadSettings()
             }
+        }
+        .sheet(isPresented: $showingWebsiteVerification) {
+            SourceWebsiteVerificationSheet(source: source)
         }
         .alert(NSLocalizedString("RESET_SETTINGS"), isPresented: $showingResetAlert) {
             Button(NSLocalizedString("CANCEL"), role: .cancel) {}
@@ -141,6 +150,7 @@ struct SourceSettingsView: View {
     }
 
     func clearCache() async {
+        VerificationEligibility.reset(sourceKey: source.key)
         // remove cookies
         for url in source.urls {
             if let cookies = HTTPCookieStorage.shared.allCookies(for: url) {
@@ -154,10 +164,12 @@ struct SourceSettingsView: View {
         await withCheckedContinuation { continuation in
             let store = WKWebsiteDataStore.default()
             store.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-                for record in records where source.urls.contains(where: { $0.domain == record.displayName }) {
-                    store.removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                let matching = records.filter { record in
+                    source.urls.contains { $0.domain == record.displayName }
                 }
-                continuation.resume()
+                store.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: matching) {
+                    continuation.resume()
+                }
             }
         }
 

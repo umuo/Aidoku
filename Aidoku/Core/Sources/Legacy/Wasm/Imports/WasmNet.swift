@@ -128,7 +128,9 @@ class WasmNet: WasmImports {
 extension WasmNet {
 
     func modifyRequest(_ urlRequest: URLRequest) -> URLRequest? {
-        guard let url = urlRequest.url else { return nil }
+        guard urlRequest.url != nil else {
+            return nil
+        }
         var request = urlRequest
 
         // ensure a user-agent is passed
@@ -139,17 +141,7 @@ extension WasmNet {
             )
         }
 
-        // add stored cookies
-        if let cookies = HTTPCookie.requestHeaderFields(with: HTTPCookieStorage.shared.allCookies(for: url) ?? [])["Cookie"] {
-            var cookieString = cookies
-            // keep cookies in original request
-            if let oldCookie = request.value(forHTTPHeaderField: "Cookie") {
-                cookieString += "; " + oldCookie
-            }
-            request.setValue(cookieString, forHTTPHeaderField: "Cookie")
-        }
-
-        return request
+        return VerificationCookieHeader.applying(to: request)
     }
 
     func performRequest(_ urlRequest: URLRequest, cloudflare: Bool = true) -> WasmResponseObject? {
@@ -164,6 +156,21 @@ extension WasmNet {
             self.incrementRequest()
 
             if let httpResponse = response as? HTTPURLResponse, let data {
+                if WebsiteVerificationService.shouldHandle(sourceKey: self.globalStore.id, response: httpResponse, data: data) {
+                    Task {
+                        do {
+                            let result = try await WebsiteVerificationService.recover(
+                                sourceKey: self.globalStore.id, original: urlRequest, effective: request,
+                                response: httpResponse, data: data
+                            )
+                            self.storedResponse = .init(data: result.0, response: result.1)
+                        } catch {
+                            self.storedResponse = .init(error: error)
+                        }
+                        self.semaphore.signal()
+                    }
+                    return
+                }
                 // check for cloudflare block
                 if CloudflareHandler.shared.shouldHandle(response: httpResponse, data: data) {
                     Task {

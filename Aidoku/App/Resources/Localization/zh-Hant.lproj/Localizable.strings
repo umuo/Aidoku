@@ -751,3 +751,15 @@
 "MIGRATE_%i_OF_%i" = "遷移 (%i/%i)";
 "SHOW_ENTRY" = "查看作品";
 "TOGGLE_PAGE_OFFSET" = "切換封面單獨顯示";
+
+// Website verification
+"WEBSITE_VERIFICATION" = "網站驗證";
+"WEBSITE_VERIFICATION_RETRY" = "完成並重試";
+"WEBSITE_VERIFICATION_INSTRUCTIONS" = "請完成網站驗證，然後點擊「完成並重試」。";
+"WEBSITE_VERIFICATION_CHECKING" = "正在檢查存取…";
+"WEBSITE_VERIFICATION_STILL_BLOCKED" = "圖源請求仍受限制。請完成網站驗證後重試；網頁驗證成功後，圖源也可能仍無法存取。";
+"WEBSITE_VERIFICATION_NETWORK_ERROR" = "無法檢查存取。請檢查網路，重新載入網頁後重試。";
+"WEBSITE_VERIFICATION_EXPIRED" = "驗證工作階段已逾時，請關閉此頁面後重新開啟「網站驗證」。";
+"WEBSITE_VERIFICATION_REQUIRED" = "此圖源需要網站驗證，請先從圖源選單開啟「網站驗證」。";
+"WEBSITE_VERIFICATION_CANCELED" = "已取消網站驗證。";
+"WEBSITE_VERIFICATION_UNAVAILABLE" = "請在前景開啟此圖源，完成網站驗證。";

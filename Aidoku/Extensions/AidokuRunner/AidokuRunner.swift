@@ -26,6 +26,12 @@ extension InterpreterConfiguration {
 
                     let httpResponse = response as? HTTPURLResponse
                     if let httpResponse {
+                        if WebsiteVerificationService.shouldHandle(sourceKey: sourceId, response: httpResponse, data: data) {
+                            return try await WebsiteVerificationService.recover(
+                                sourceKey: sourceId, original: originalRequest, effective: request,
+                                response: httpResponse, data: data
+                            )
+                        }
                         // check if cloudflare blocked the request
                         if CloudflareHandler.shared.shouldHandle(response: httpResponse, data: data) {
                             do {
@@ -93,7 +99,7 @@ extension AidokuRunner.Source {
         return await Self.modify(url: url, request: result)
     }
 
-    static func modify(url: URL, request: URLRequest) async -> URLRequest {
+    static func modify(url _: URL, request: URLRequest) async -> URLRequest {
         var request = request
         // add user-agent and stored cookies if not provided (for cloudflare)
         if request.value(forHTTPHeaderField: "User-Agent") == nil {
@@ -102,20 +108,7 @@ extension AidokuRunner.Source {
                 forHTTPHeaderField: "User-Agent"
             )
         }
-        let cookies = HTTPCookie.requestHeaderFields(with: HTTPCookieStorage.shared.allCookies(for: url) ?? [])
-        for (key, value) in cookies {
-            if key == "Cookie" {
-                var cookieString = value
-                // keep cookies in original request
-                if let oldCookie = request.value(forHTTPHeaderField: "Cookie") {
-                    cookieString += "; " + oldCookie
-                }
-                request.setValue(cookieString, forHTTPHeaderField: "Cookie")
-            } else {
-                request.setValue(value, forHTTPHeaderField: key)
-            }
-        }
-        return request
+        return VerificationCookieHeader.applying(to: request)
     }
 
     /// Attempt to get a custom Home-like layout for listings.

@@ -628,15 +628,24 @@ extension NewSourceViewController {
             }
         }
 
+        var menuActions = [settingsAction, safariAction]
+        if source.websiteVerificationPolicy != nil {
+            menuActions.append(UIAction(
+                title: NSLocalizedString("WEBSITE_VERIFICATION"), image: UIImage(systemName: "checkmark.shield")
+            ) { [weak self] _ in
+                guard let self, let controller = self.source.websiteVerificationController() else {
+                    return
+                }
+                self.present(controller, animated: true)
+            })
+        }
+
         let rightmostButton = if !onlySearch && source.urls.first != nil {
             UIBarButtonItem(
                 title: NSLocalizedString("MORE_BARBUTTON"),
                 image: UIImage(systemName: "ellipsis"),
                 primaryAction: nil,
-                menu: UIMenu(children: [
-                    settingsAction,
-                    safariAction
-                ])
+                menu: UIMenu(children: menuActions)
             )
         } else {
             UIBarButtonItem(
