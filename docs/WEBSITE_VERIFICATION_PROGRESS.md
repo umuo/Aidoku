@@ -4,7 +4,7 @@
 
 ## 当前交付
 
-手动验证与第二阶段自动恢复代码已接入。自动流程需要该设备先在同一站点、同一 UA 下通过一次手动列表 API 检查才会激活；已通过隔离 iOS 模拟器中的手动界面与原生列表探测，尚未完成整 App 构建及真机恢复访问验收。
+手动验证与第二阶段自动恢复代码已接入。自动流程需要该设备先在同一站点、同一 UA 下通过一次手动列表 API 检查才会激活；已通过隔离 iOS 模拟器中的手动界面与原生列表探测，并完成 Xcode 27 云端完整设备构建；真机恢复访问仍待验收。
 
 用户入口：包子漫画 1 的源页面右上角菜单 →“网站验证”，或源设置 →“网站验证”。旧界面也提供盾牌按钮。完成网页流程后点击“完成并重试”；只有原生列表 API 返回正确 JSON 结构时才关闭页面并刷新当前源。验证窗口显示当前主机，支持重载、关闭、取消和会话超时。
 
@@ -28,7 +28,7 @@
 - `AidokuTests/WebsiteVerificationTests.swift`、`AidokuTests/VerificationCookieBridgeTests.swift`：测试。
 - `tools/test-website-verification.py`：独立运行实际模块测试，无需解析 App 的全部第三方包。
 
-## 验证记录与环境限制
+## 初期验证记录与环境限制（云端构建前）
 
 - 重新读取真实公开 API，响应字段确认为 `error: challenge_required` 与 `challenge_url`；没有运行验证脚本或保存真实站点凭据。
 - Foundation 核心测试 5 组通过：源/主机边界、挑战识别和非法入口、API 成功判断、Cookie 旧值去重、路径/Secure/域名约束。
@@ -98,3 +98,10 @@ python3 tools/test-website-verification.py
 3. 测试壳通过该刷新事件写入 `native-api-verified` 标记，已单独读取确认。未读取或导出真实 Cookie 值，未人工操作验证码。
 
 边界：这是隔离测试壳中的真实网页与原生 API 结果，未做该模拟器内验证前 403 与验证后成功的同环境对照，不能据此断言所有环境均可迁移验证状态。没有运行完整 Aidoku、自动弹窗、搜索/章节/图片链路，也不能替代用户设备验收。完整工程依然受旧 Xcode/SDK 限制。
+
+
+## 完整 IPA 构建完成
+
+2026-10-29（北京时间）：用户授权推送到独立构建分支，提交 `76f6349` 的[原有 Xcode 27 nightly 构建成功](https://github.com/umuo/Aidoku/actions/runs/40848173879)。完整 IPA 已下载到 `build/Aidoku-website-verification-76f6349-unsigned.ipa`；版本 0.9 / build 4，14,594,485 字节，最低 iOS 15.0，未签名。ZIP、Actions 产物摘要、arm64 真机平台和验证功能存在性均通过；SHA-256 为 `2fba498076bd83070870c6530b37c911003d2bc792e27f4b225d50dbacbfa185`。
+
+同提交新增流程在 Xcode 26.6 下测试 19 组通过，但因上游 Xcode 27 接口归档失败；已将新流程 runner 修正为 `xcode-27`，无需改动业务源码。当前安装包取自已成功的原有流程，不能把失败流程描述为成功。产物需要用户重新签名安装，设备阅读与自动验证尚未验收。

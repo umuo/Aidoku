@@ -11,7 +11,7 @@ permissions:
 
 jobs:
     build:
-        runs-on: macos-26
+        runs-on: xcode-27
         timeout-minutes: 60
         steps:
             -
@@ -42,7 +42,8 @@ jobs:
                     cd build/ipa
                     zip -qry ../Aidoku-website-verification-unsigned.ipa Payload
                     unzip -t ../Aidoku-website-verification-unsigned.ipa
-                    shasum -a 256 ../Aidoku-website-verification-unsigned.ipa > ../Aidoku-website-verification-unsigned.ipa.sha256
+                    cd ..
+                    shasum -a 256 Aidoku-website-verification-unsigned.ipa > Aidoku-website-verification-unsigned.ipa.sha256
             -
                 name: Upload IPA
                 uses: actions/upload-artifact@v4
